@@ -1,0 +1,28 @@
+
+export PUBKEY="AKBOHLQP"
+export PVTKEY="3764d37f-f3ef-4956-b042-4fcf1f568c34"
+export VAULT_ADDR='http://127.0.0.1:8200'
+unset VAULT_TOKEN
+
+vault secrets enable mongodbatlas
+
+vault write mongodbatlas/config \
+  public_key=$PUBKEY \
+  private_key=$PVTKEY
+
+vault write mongodbatlas/roles/cicd-mongodb \
+  organization_id="5c5c939079358e2b051bc839" \
+  roles="ORG_OWNER" \
+  ip_addresses="47.145.201.230" \
+  ttl="45m" \
+  max_ttl="1h"
+
+### Verify:  vault kv get mongodbatlas/roles/cicd-mongodb
+
+  vault read mongodbatlas/creds/cicd-mongodb
+
+### Verify:  vault kv get mongodbatlas/creds/cicd-mongodb
+
+
+vault lease revoke mongodbatlas/creds/cicd-mongodb/R4uSUvzklMS25jWaMpukokVZ
+vault lease renew -increment=30m mongodbatlas/creds/cicd-mongodb/R4uSUvzklMS25jWaMpukokVZ

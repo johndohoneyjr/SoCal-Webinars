@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Example create a cluster from MDBW 2019 presentation
+# Replace PUBABIKEY, PRIAPIKEY,PROJECTID 
+# And modify other parameters to create your desired cluster 
+
+
+curl --user "afiznapv:91c76ea0-f049-489f-9923-f6026d4a000c" --digest \
+  --header "Content-Type: application/json" \
+  --include \
+  --request POST "https://cloud.mongodb.com/api/atlas/v1.0/groups/5d34f520d5ec13e4e62f6858/clusters?pretty=true" \
+  --data '
+    {
+      "name" : "Cluster-Demo",
+      "diskSizeGB" : 100,
+      "autoScaling" : {
+        "diskGBEnabled" : false
+      },
+      "clusterType":"REPLICASET",
+      "providerBackupEnabled" : true,
+      "providerSettings" : {
+        "providerName" : "AWS",
+        "diskIOPS": 320,
+        "instanceSizeName" : "M30",
+        "volumeType" : "PROVISIONED"
+      },
+      "replicationSpecs" : [ {
+       "numShards": 1,
+       "regionsConfig" : {
+         "US_WEST_1" : {
+            "analyticsNodes" : 1,
+            "electableNodes" : 3,
+            "readOnlyNodes" : 0,
+            "priority" : 7
+         },
+         "US_EAST_1" : {
+            "analyticsNodes" : 0,
+            "readOnlyNodes" : 1,
+            "electableNodes" : 2,
+            "priority" : 6
+        }
+       }
+     } ]
+    }'
